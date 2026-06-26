@@ -15,17 +15,26 @@ public class ProductoClientAdapter implements IProductoClientPort {
 
     public ProductoClientAdapter(@Value("${servicios.productos-url}") String baseUrl) {
         this.webClient = WebClient.builder()
-            .baseUrl(baseUrl)
-            .build();
+                .baseUrl(baseUrl)
+                .build();
     }
 
     @Override
     public Mono<Producto> findById(Long id) {
-        return null;
+        return this.webClient.get()
+                .uri("/api/productos/{id}", id)
+                .retrieve()
+                .bodyToMono(Producto.class);
     }
 
     @Override
     public Mono<Producto> decreaseStock(Long id, Integer quantity) {
-        return null;
+        return this.webClient.patch()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/productos/{id}/decrease-stock")
+                        .queryParam("quantity", quantity)
+                        .build(id))
+                .retrieve()
+                .bodyToMono(Producto.class);
     }
 }

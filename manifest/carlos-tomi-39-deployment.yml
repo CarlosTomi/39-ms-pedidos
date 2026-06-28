@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+
+kind: Deployment
+
+metadata:
+  name: ms-pedidos-deployment
+  namespace: carlostomi-pedidos-ns
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ms-pedidos
+  template:
+    metadata:
+      labels:
+        app: ms-pedidos
+
+    spec:
+      containers:
+      - name: ms-pedidos
+        image: carlostomi/ms-pedidos:1.0
+        ports:
+        - containerPort: 8082
+        env:
+        - name: SERVER_PORT
+          valueFrom: { configMapKeyRef: { name: ms-pedidos-config, key: SERVER_PORT } }
+        - name: DB_HOST
+          valueFrom: { configMapKeyRef: { name: ms-pedidos-config, key: DB_HOST } }
+        - name: DB_NAME
+          valueFrom: { configMapKeyRef: { name: ms-pedidos-config, key: DB_NAME } }
+        - name: PRODUCTOS_SERVICE_URL
+          valueFrom: { configMapKeyRef: { name: ms-pedidos-config, key: PRODUCTOS_SERVICE_URL } }
+        - name: DB_USER
+          valueFrom: { secretKeyRef: { name: ms-pedidos-secret, key: username } }
+        - name: DB_PASSWORD
+          valueFrom: { secretKeyRef: { name: ms-pedidos-secret, key: password } }
